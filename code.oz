@@ -1,7 +1,7 @@
 %====INFORMATION====%
 % LFSAB1402 Projet 2016
-% Nomas : NOMA1-NOMA2
-% Noms : (Nom1,Prenom1)-(Nom2,Prenom2)
+% Nomas : 81031400-NOMA2
+% Noms : (Bastin,Julien)-(Detry,Damien)
 %====MODULELINK====%
 declare
 %{Property.put 'MyDir' './'} %% TODO ajoutez cette ligne si les images ne s'affichent pas et remplacez ./ par le chemin vers le dossier des images
