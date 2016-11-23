@@ -60,7 +60,25 @@ in
 		 translate(dx:12.5 dy:187.5 1:scale(rx:125.0 ry:125.0 1:primitive(kind:water)))
 		 translate(dx:287.5 dy:412.5 1:scale(rx:200.0 ry:50.0 1:primitive(kind:water)))
 		]
-	     pu:nil)%% TODO change the map here
+	     pu:
+		[
+		 %add arenas
+		 translate(dx:187.5 dy:287.5 1:primitive(kind:arena)) 
+
+		 %add pokestops
+		 translate(dx:100.0 dy:87.5 1:primitive(kind:pokestop))
+		 translate(dx:300.0 dy:137.5 1:primitive(kind:pokestop))
+		 translate(dx:225.0 dy:437.5 1:primitive(kind:pokestop))
+
+		 %add pokemons
+		 translate(dx:237.5 dy:137.5 1:primitive(kind:pokemon))
+		 translate(dx:200.0 dy:212.5 1:primitive(kind:pokemon))
+		 translate(dx:462.5 dy:150.0 1:primitive(kind:pokemon))
+		 translate(dx:225.0 dy:275.0 1:primitive(kind:pokemon))
+		 translate(dx:462.5 dy:300.0 1:primitive(kind:pokemon))
+		 translate(dx:450.0 dy:337.5 1:primitive(kind:pokemon))
+		 translate(dx:100.0 dy:487.5 1:primitive(kind:pokemon))
+		])
 
    fun{MyFunction Map}
       nil %% TODO complete your function here
