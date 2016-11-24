@@ -81,7 +81,57 @@ in
 		])
 
    fun{MyFunction Map}
-      nil %% TODO complete your function here
+      local FinalList RealList PokeList DoListR DoListP AuxR AuxP in
+	 RealList=Map.ru
+	 PokeList=Map.pu
+	 fun{AuxR T X0 Y0 X1 Y1}
+	    case T
+	    of primitive(kind:K) then
+	       case K
+	       of road then fun {$ Time} realitem(kind:K p1:pt(x:X0 y:Y0) p2:pt(x:X1 y:Y1)) end
+	       []building then fun {$ Time} realitem(kind:K p1:pt(x:X0 y:Y0) p2:pt(x:X0 y:Y1)
+							      p3:pt(x:X1 y:Y1) p4:pt(x:X1 y:Y0)) end
+	       []water then fun {$ Time} realitem(kind:K p1:pt(x:X0 y:Y0) p2:pt(x:X0 y:Y1)
+							      p3:pt(x:X1 y:Y1) p4:pt(x:X1 y:Y0)) end
+	       end	       
+	    []translate(dx:X dy:Y 1:K) then {AuxR K X0+X Y0+Y X1+X Y1+X}
+	    []scale(rx:X ry:Y 1:K) then {AuxR K X0*X Y0*Y X1*X Y1*Y}
+	    []rotate(angle:A 1:K)then {AuxR K X0 Y0 X1*{Cos A}+Y1*{Sin A} ~X1*{Sin A}+Y1*{Cos A}}
+	    end
+	 end
+
+	 fun{AuxP T X Y}
+	    case T
+	    of primitive(kind:K) then
+	       case K
+	       of pokemon then fun{$ Time} pokeitem(kind:K position:pt(x:X y:Y)) end
+	       []pokestop then fun{$ Time} pokeitem(kind:K position:pt(x:X y:Y)) end
+	       []arena then fun{$ Time} pokeitem(kind:K position:pt(x:X y:Y)) end
+	       end
+	    []translate(dx:X1 dy:Y1 1:K) then {AuxP K X+X1 Y+Y1}
+	    end
+	 end
+	 
+	       
+	 fun {DoListR L}
+	    case L
+	    of nil then nil
+	    []H|T then {AuxR H 0.0 0.0 1.0 0.0}|{DoListR T}
+	    end
+	 end
+
+	 fun {DoListP L}
+	    case L
+	    of nil then nil
+	    []H|T then {AuxP H 0.0 0.0}|{DoListP T}
+	    end
+	 end
+
+	 FinalList = {Append {DoListR RealList} {DoListP PokeList}}
+
+	 FinalList
+      end
+      
    end
 
    fun{CheckMap Map}
