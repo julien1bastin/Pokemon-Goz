@@ -46,19 +46,19 @@ in
 		 scale(rx:237.5 ry:0.0 1:translate(dx:262.5 dy:475.0 1:primitive(kind:road))) %20
 
 		 %add buildings
-		 %scale(rx:25.0 ry:25.0 1:translate(dx:25.0 dy:87.5 1:primitive(kind:building)))
-		 %scale(rx:37.5 ry:37.5 1:translate(dx:87.5 dy:112.5 1:primitive(kind:building)))
-		 %scale(rx:50.0 ry:50.0 1:translate(dx:150.0 dy:75.0 1:primitive(kind:building)))
-		 %scale(rx:50.0 ry:62.5 1:translate(dx:375.0 dy:112.5 1:primitive(kind:building)))
-		 %scale(rx:62.5 ry:75.0 1:translate(dx:275.0 dy:200.0 1:primitive(kind:building)))
-		 %scale(rx:50.0 ry:62.5 1:translate(dx:275.0 dy:312.5 1:primitive(kind:building)))
-		 %scale(rx:25.0 ry:25.0 1:translate(dx:350.0 dy:375.0 1:primitive(kind:building)))
-		 %scale(rx:112.5 ry:75.0 1:translate(dx:37.5 dy:375.0 1:primitive(kind:building)))
+		 scale(rx:25.0 ry:25.0 1:translate(dx:25.0 dy:87.5 1:primitive(kind:building)))
+		 scale(rx:37.5 ry:37.5 1:translate(dx:87.5 dy:112.5 1:primitive(kind:building)))
+		 scale(rx:50.0 ry:50.0 1:translate(dx:150.0 dy:75.0 1:primitive(kind:building)))
+		 scale(rx:50.0 ry:62.5 1:translate(dx:375.0 dy:112.5 1:primitive(kind:building)))
+		 scale(rx:62.5 ry:75.0 1:translate(dx:275.0 dy:200.0 1:primitive(kind:building)))
+		 scale(rx:50.0 ry:62.5 1:translate(dx:275.0 dy:312.5 1:primitive(kind:building)))
+		 scale(rx:25.0 ry:25.0 1:translate(dx:350.0 dy:375.0 1:primitive(kind:building)))
+		 scale(rx:112.5 ry:75.0 1:translate(dx:37.5 dy:375.0 1:primitive(kind:building)))
 
 		 %add water
-		 %scale(rx:200.0 ry:50.0 1:translate(dx:250.0 dy:25.0 1:primitive(kind:water)))
-		 %scale(rx:125.0 ry:125.0 1:translate(dx:12.5 dy:187.5 1:primitive(kind:water)))
-		 %scale(rx:200.0 ry:50.0 1:translate(dx:287.5 dy:412.5 1:primitive(kind:water)))
+		 scale(rx:200.0 ry:50.0 1:translate(dx:250.0 dy:25.0 1:primitive(kind:water)))
+		 scale(rx:125.0 ry:125.0 1:translate(dx:12.5 dy:187.5 1:primitive(kind:water)))
+		 scale(rx:200.0 ry:50.0 1:translate(dx:287.5 dy:412.5 1:primitive(kind:water)))
 		]
 	     pu:
 		[
@@ -116,7 +116,7 @@ in
 	 fun {DoListR L}
 	    case L
 	    of nil then nil
-	    []H|T then {AuxR H 0.0 0.0 1.0 0.0}|{DoListR T}
+	    []H|T then {AuxR H 0.0 0.0 1.0 1.0}|{DoListR T}
 	    end
 	 end
 
