@@ -17,7 +17,7 @@ local
 		    withIfThenElse:false
 		    withComparison:false
 		    withTimeWindow:false
-		    withCheckMapEasy:false
+		    withCheckMapEasy:true
 		    withCheckMapComplete:false
 		   )
 in
@@ -126,8 +126,8 @@ in
 	    []H|T then {AuxP H 0.0 0.0}|{DoListP T}
 	    end
 	 end
-
-	 FinalList = {Append {DoListR RealList} {DoListP PokeList}}
+	 
+	  FinalList = {Append {DoListR RealList} {DoListP PokeList}}
 
 	 FinalList
       end
@@ -135,7 +135,57 @@ in
    end
 
    fun{CheckMap Map}
-      false %% TODO complete here the function for the checking of the maps
+      local RuList PuList CheckP CheckR AuxR AuxP CheckTrueOrFalse in
+	 RuList=Map.ru
+	 PuList=Map.pu
+
+	 fun {CheckP T}
+	    case T
+	    of primitive(kind:K) then
+	       case K of pokemon then true
+	       []pokestop then true
+	       []arena then true
+	       end
+	    []translate(dx:X dy:Y 1:K) andthen {Float.is X} andthen {Float.is Y} then {CheckP K}
+	    else false
+	    end
+	 end
+
+	 fun{CheckR T}
+	    case T
+	    of primitive(kind:K) then
+	       case K of road then true
+	       []building then true
+	       []water then true
+	       end
+	    []translate(dx:X dy:Y 1:K) andthen {Float.is X} andthen {Float.is Y} then {CheckR K}
+	    []rotate(angle:A 1:K) andthen {Float.is A} then {CheckR K}
+	    []scale(rx:X ry:Y 1:K) andthen {Float.is X} andthen {Float.is Y} then {CheckR K}
+	    else false
+	    end
+	 end
+	 
+	 fun{AuxR L}
+	    case L of nil then nil
+	    []H|T then {CheckR H}|{AuxR T}
+	    end
+	 end
+
+	 fun{AuxP L}
+	    case L of nil then nil
+	    []H|T then {CheckP H}|{AuxP T}
+	    end
+	 end
+
+	 fun {CheckTrueOrFalse L}
+	    case L of nil then true
+	    []H|T andthen H==true then {CheckTrueOrFalse T}
+	    else false
+	    end
+	 end
+
+	 {CheckTrueOrFalse {Append {AuxR RuList} {AuxP PuList}}}
+      end
    end
    
    {Projet.run MyFunction Map MaxTime Extensions CheckMap}
