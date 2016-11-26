@@ -81,10 +81,28 @@ in
 		])
 
    fun{MyFunction Map}
-      local FinalList RealList PokeList DoListR DoListP AuxR AuxP in
+      local FinalList RealList PokeList DoListR DoListP AuxR AuxP ToFloat in
 	 RealList=Map.ru
 	 PokeList=Map.pu
-	 fun{AuxR T X0 Y0 X1 Y1}
+
+	 fun {ToFloat V}
+	    case V
+	    of M andthen {Float.is M} then M
+	    [] plus(V1 V2) then {ToFloat V1}+{ToFLoat V2}
+	    [] minus(V1 V2) then {ToFLoat V1}-{ToFLoat V2}
+	    [] mult(V1 V2) then {ToFLoat V1}*{ToFLoat V2}
+	    [] 'div'(V1 V2) then ({ToFLoat V1} div {ToFLoat V2})
+	    [] cos(V1) then {Float.cos {ToFloat V1}}
+	    [] sin(V1) then {Float.sin {ToFLoat V1}}
+	    [] tan(V1) then {Float.tan {ToFLoat V1}}
+	    [] exp(V1) then {Float.exp {ToFloat V1}}
+	    [] log(V1) then {Float.log {ToFLoat V1}}
+	    [] neg(V1) then ~{ToFloat V1}
+	    end
+	 end
+	    
+	 
+	 fun {AuxR T X0 Y0 X1 Y1}
 	    case T
 	    of primitive(kind:K) then
 	       case K
@@ -94,9 +112,9 @@ in
 	       []water then fun {$ Time} realitem(kind:K p1:pt(x:X0 y:Y0) p2:pt(x:X0 y:Y1)
 							      p3:pt(x:X1 y:Y1) p4:pt(x:X1 y:Y0)) end
 	       end	       
-	    []translate(dx:X dy:Y 1:K) then {AuxR K X0+X Y0+Y X1+X Y1+Y}
-	    []scale(rx:X ry:Y 1:K) then {AuxR K X0*X Y0*Y X1*X Y1*Y}
-	    []rotate(angle:A 1:K)then {AuxR K X0 Y0 X1*{Cos A}+Y1*{Sin A} ~X1*{Sin A}+Y1*{Cos A}}
+	    []translate(dx:X dy:Y 1:K) then {AuxR K X0+{ToFloat X} Y0+{ToFloat Y} X1+{ToFLoat X} Y1+{ToFLoat Y}}
+	    []scale(rx:X ry:Y 1:K) then {AuxR K X0*{ToFloat X} Y0*{ToFLoat Y} X1*{ToFLoat X} Y1*{ToFLoat Y}}
+	    []rotate(angle:A 1:K)then {AuxR K X0 Y0 X1*{Float.cos {ToFloat A}}+Y1*{Float.sin {ToFLoat A}} ~X1*{Float.sin {ToFLoat A}}+Y1*{Float.cos {ToFLoat A}}}
 	    end
 	 end
 
@@ -108,7 +126,7 @@ in
 	       []pokestop then fun{$ Time} pokeitem(kind:K position:pt(x:X y:Y)) end
 	       []arena then fun{$ Time} pokeitem(kind:K position:pt(x:X y:Y)) end
 	       end
-	    []translate(dx:X1 dy:Y1 1:K) then {AuxP K X+X1 Y+Y1}
+	    []translate(dx:X1 dy:Y1 1:K) then {AuxP K X+{ToFloat X1} Y+{ToFloat Y1}}
 	    end
 	 end
 	 
