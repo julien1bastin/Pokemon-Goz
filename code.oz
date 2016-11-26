@@ -1,6 +1,6 @@
 %====INFORMATION====%
 % LFSAB1402 Projet 2016
-% Nomas : 81031400-NOMA2
+% Nomas : 81031400-91451400
 % Noms : (Bastin,Julien)-(Detry,Damien)
 %====MODULELINK====%
 declare
