@@ -251,6 +251,28 @@ in
 	    end
 	 end
 
+	 fun{CheckValueFormula L}
+	    case L of nil then true
+	    []H|T anthen {Label H} == primitive then {CheckValueFormula T)
+	    []H|T andthen {Label H} == translate then 
+	       case translate(dx:X dy:Y 1:K) andthen {IsRecord X} == true andthen {IsRecord Y} == true then false
+	       []translate(dx:X dy:Y 1:K) andthen {IsRecord X} == false andthen {IsRecord Y} == true then false
+	       []translate(dx:X dy:Y 1:K) andthen {IsRecord X} == true andthen {IsRecord Y} == false then false
+	       []translate(dx:X dy:Y 1:K) andthen {IsRecord X} == false andthen {IsRecord Y} == false then {CheckValueFormula T}					
+	       end
+	    []H|T andthen {Label H} == rotate then 
+	       case rotate(angle:A 1:K) andthen {IsRecord A} == true then false								  
+	       []rotate(angle:A 1:K) andthen {IsRecord A} == false then {CheckValueFormula T}
+	       end
+	    []H|T andthen {Label H} == scale then 
+	       case scale(rx:X ry:Y 1:K) andthen {IsRecord X} == true andthen {IsRecord Y} == true then false
+	       []scale(rx:X ry:Y 1:K) andthen {IsRecord X} == false andthen {IsRecord Y} == true then false
+	       []scale(rx:X ry:Y 1:K) andthen {IsRecord X} == true andthen {IsRecord Y} == false then false
+	       []scale(rx:X ry:Y 1:K) andthen {IsRecord X} == false andthen {IsRecord Y} == false then {CheckValueFormula T}
+	       end
+	    end								       
+    	 end
+
 	 {CheckTrueOrFalse {Append {AuxR RuList} {AuxP PuList}}}
       end
    end
