@@ -9,7 +9,7 @@ declare
 
 %====CODE====%
 local
-   MaxTime = 10 % nombre de frame à l'animation
+   MaxTime = 100 % nombre de frame à l'animation
    MyFunction
    Map
    CheckMap
@@ -63,7 +63,8 @@ in
 	     pu:
 		[
 		 %add arenas
-		 translate(dx:187.5 dy:287.5 1:primitive(kind:arena)) 
+		 translate(dx:time %187.5
+			   dy:287.5 1:primitive(kind:arena)) 
 
 		 %add pokestops
 		 translate(dx:100.0 dy:87.5 1:primitive(kind:pokestop))
@@ -81,17 +82,25 @@ in
 		])
 
    fun{MyFunction Map}
-      local FinalList RealList PokeList DoListR DoListP AuxR AuxP ValueToFloat FormulaToFloat in
+      local FinalList RealList PokeList DoListR DoListP AuxR AuxP ValueToFloat FormulaToFloat Append in
 	 RealList=Map.ru
 	 PokeList=Map.pu
 
+	 fun {Append L1 L2}
+	    case L1
+	    of nil then L2
+	    []H|T then H|{Append T L2}
+	    end
+	 end
+	 
+	 %Fonction qui prend une <Value> en parametre et qui renvoie apres recursion un float
 	 fun {ValueToFloat V}
 	    case V
 	    of M andthen {Float.is M} then M
 	    [] plus(V1 V2) then {ValueToFloat V1}+{ValueToFloat V2}
 	    [] minus(V1 V2) then {ValueToFloat V1}-{ValueToFloat V2}
 	    [] mult(V1 V2) then {ValueToFloat V1}*{ValueToFloat V2}
-	    [] 'div'(V1 V2) then ({ValueToFloat V1} div {ValueToFloat V2})
+	    [] 'div'(V1 V2) then ({ValueToFloat V1}/{ValueToFloat V2})
 	    [] cos(V1) then {Float.cos {ValueToFloat V1}}
 	    [] sin(V1) then {Float.sin {ValueToFloat V1}}
 	    [] tan(V1) then {Float.tan {ValueToFloat V1}}
@@ -101,58 +110,58 @@ in
 	    end
 	 end
 
-	 fun {FormulaToFloat F}
+	 %Fonction qui prend une <Formula> en parametre et qui renvoie apres recursion un float
+	 fun {FormulaToFloat F Time}
 	    case F
 	    of M andthen {Float.is M} then M
-	       %[]time then
-	    []plus(F1 F2) then {FormulaToFloat F1}+{FormulaToFloat F2}
-	    []minus(F1 F2) then {FormulaToFloat F1}-{FormulaToFloat F2}
-	    []mult(F1 F2) then {FormulaToFloat F1}*{FormulaToFloat F2}
-	    []'div'(F1 F2) then ({FormulaToFloat F1} div {FormulaToFloat F2})
-	    []sin(F1) then {Float.sin {FormulaToFloat F1}}
-	    []cos(F1) then {Float.cos {FormulaToFloat F1}}
-	    []tan(F1) then {Float.tan {FormulaToFloat F1}}
-	    []exp(F1) then {Float.exp {FormulaToFloat F1}}
-	    []log(F1) then {Float.log {FormulaToFloat F1}}
-	    []neg(F1) then ~{FormulaToFloat F1}
+	    []time then Time
+	    []plus(F1 F2) then {FormulaToFloat F1 Time}+{FormulaToFloat F2 Time}
+	    []minus(F1 F2) then {FormulaToFloat F1 Time}-{FormulaToFloat F2 Time}
+	    []mult(F1 F2) then {FormulaToFloat F1 Time}*{FormulaToFloat F2 Time}
+	    []'div'(F1 F2) then ({FormulaToFloat F1 Time}/{FormulaToFloat F2 Time})
+	    []sin(F1) then {Float.sin {FormulaToFloat F1 Time}}
+	    []cos(F1) then {Float.cos {FormulaToFloat F1 Time}}
+	    []tan(F1) then {Float.tan {FormulaToFloat F1 Time}}
+	    []exp(F1) then {Float.exp {FormulaToFloat F1 Time}}
+	    []log(F1) then {Float.log {FormulaToFloat F1 Time}}
+	    []neg(F1) then ~{FormulaToFloat F1 Time}
 	    []ite(F1 F2 F3) then
-	       if {FormulaToFloat F1}==0.0 then {FormulaToFloat F3}
-	       else {FormulaToFloat F2}
+	       if {FormulaToFloat F1 Time}==0.0 then {FormulaToFloat F3 Time}
+	       else {FormulaToFloat F2 Time}
 	       end
 	    []eq(F1 F2) then
-	       if {FormulaToFloat F1}=={FormulaToFloat F2} then 1.0
+	       if {FormulaToFloat F1 Time}=={FormulaToFloat F2 Time} then 1.0
 	       else 0.0
 	       end
 	    []ne(F1 F2) then
-	       if {FormulaToFloat F1} \= {FormulaToFloat F2} then 1.0
+	       if {FormulaToFloat F1 Time} \= {FormulaToFloat F2 Time} then 1.0
 	       else 0.0
 	       end
 	    []lt(F1 F2) then
-	       if {FormulaToFloat F1} < {FormulaToFloat F2} then 1.0
+	       if {FormulaToFloat F1 Time} < {FormulaToFloat F2 Time} then 1.0
 	       else 0.0
 	       end
 	    []le(F1 F2) then
-	       if {FormulaToFloat F1} =< {FormulaToFloat F2} then 1.0
+	       if {FormulaToFloat F1 Time} =< {FormulaToFloat F2 Time} then 1.0
 	       else 0.0
 	       end
 	    []gt(F1 F2) then
-	       if {FormulaToFloat F1} > {FormulaToFloat F2} then 1.0
+	       if {FormulaToFloat F1 Time} > {FormulaToFloat F2 Time} then 1.0
 	       else 0.0
 	       end
 	    []ge(F1 F2) then
-	       if {FormulaToFloat F1} >= {FormulaToFloat F2} then 1.0
+	       if {FormulaToFloat F1 Time} >= {FormulaToFloat F2 Time} then 1.0
 	       else 0.0
 	       end
 	    end
 	    
-	 end
-      
+	 end     
+
 	 
-	       
-	    
 	 
-	 fun {AuxR T X0 Y0 X1 Y1}
-	    case T
+	 %Fonction qui prend un <RealUniverseItem> et ses coordonnees en parametre et qui renvoie une fonction placant cet item correctement sur la map
+	 fun {AuxR T1 X0 Y0 X1 Y1}
+	    case T1
 	    of primitive(kind:K) then
 	       case K
 	       of road then fun {$ Time} realitem(kind:K p1:pt(x:X0 y:Y0) p2:pt(x:X1 y:Y1)) end
@@ -160,26 +169,56 @@ in
 							      p3:pt(x:X1 y:Y1) p4:pt(x:X1 y:Y0)) end
 	       []water then fun {$ Time} realitem(kind:K p1:pt(x:X0 y:Y0) p2:pt(x:X0 y:Y1)
 							      p3:pt(x:X1 y:Y1) p4:pt(x:X1 y:Y0)) end
-	       end	       
+	       end
+	    []H|T then
+	       local Aux in
+		  fun {Aux A X0 Y0 X1 Y1}
+		     case A
+		     of nil then nil
+		     []H|T then {AuxR H X0 Y0 X1 Y1}|{Aux T X0 Y0 X1 Y1}
+		     end
+		  end
+		  {Aux T1 X0 Y0 X1 Y1}
+	       end
+	       
 	    []translate(dx:X dy:Y 1:K) then {AuxR K X0+{ValueToFloat X} Y0+{ValueToFloat Y} X1+{ValueToFloat X} Y1+{ValueToFloat Y}}
 	    []scale(rx:X ry:Y 1:K) then {AuxR K X0*{ValueToFloat X} Y0*{ValueToFloat Y} X1*{ValueToFloat X} Y1*{ValueToFloat Y}}
 	    []rotate(angle:A 1:K)then {AuxR K X0 Y0 X1*{Float.cos {ValueToFloat A}}+Y1*{Float.sin {ValueToFloat A}} ~X1*{Float.sin {ValueToFloat A}}+Y1*{Float.cos {ValueToFloat A}}}
 	    end
 	 end
 
-	 fun{AuxP T X Y}
+	 %Fonction qui prend un <PokeUniversePOI> et ses coordonnee en parametre et renvoie une fonction placant correctement cet item sur la map
+	 fun{AuxP T X Y TMin TMax}
 	    case T
 	    of primitive(kind:K) then
 	       case K
-	       of pokemon then fun{$ Time} pokeitem(kind:K position:pt(x:X y:Y)) end
-	       []pokestop then fun{$ Time} pokeitem(kind:K position:pt(x:X y:Y)) end
-	       []arena then fun{$ Time} pokeitem(kind:K position:pt(x:X y:Y)) end
+	       of pokemon then fun{$ Time} pokeitem(kind:K position:pt(x:{FormulaToFloat X Time} y:{FormulaToFloat Y Time})) end
+	       []pokestop then fun{$ Time} pokeitem(kind:K position:pt(x:{FormulaToFloat X Time} y:{FormulaToFloat Y Time})) end
+	       []arena then fun{$ Time} pokeitem(kind:K position:pt(x:{FormulaToFloat X Time} y:{FormulaToFloat Y Time})) end
 	       end
-	    []translate(dx:X1 dy:Y1 1:K) then {AuxP K X+{FormulaToFloat X1} Y+{FormulaToFloat Y1}}
+	       
+	    []H|T then
+	       local Aux in
+		  fun {Aux A X Y}
+		     case A
+		     of nil then nil
+		     []H|T then {AuxP H X Y TMin TMax}|{Aux T X Y}
+		     end
+		  end
+		  {Aux T X Y}
+	       end
+	    []translate(dx:X1 dy:Y1 1:K) then
+	       case K 
+	       of primitive(kind:pokemon) then fun{$ Time} pokeitem(kind:pokemon position:pt(x:X+{FormulaToFloat X1 Time} y:Y+{FormulaToFloat Y1 Time})) end
+	       []primitive(kind:pokestop) then fun{$ Time} pokeitem(kind:pokestop position:pt(x:X+{FormulaToFloat X1 Time} y:Y+{FormulaToFloat Y1 Time})) end
+	       []primitive(kind:arena) then fun{$ Time} pokeitem(kind:arena position:pt(x:X+{FormulaToFloat X1 Time} y:Y+{FormulaToFloat Y1 Time})) end
+	       else {AuxP K X+{FormulaToFloat X1 TMin} Y+{FormulaToFloat Y1 TMin} TMin TMax}
+	       end
+	    []spawn(tmin:I1 tmax:I2 1:K) then {AuxP K X Y I1 I2}
 	    end
 	 end
 	 
-	       
+	 %Fonction qui parcours la liste des elements du realuniverse de la map (Map.ru) et cree une liste des fonctions a renvoyer pour les placer
 	 fun {DoListR L}
 	    case L
 	    of nil then nil
@@ -187,14 +226,15 @@ in
 	    end
 	 end
 
+	 %Fonction qui parcours la liste des elements du pokeuniverse de la map (Map.pu) et cree une liste des fonctions a renvoyer pour les placer
 	 fun {DoListP L}
 	    case L
 	    of nil then nil
-	    []H|T then {AuxP H 0.0 0.0}|{DoListP T}
+	    []H|T then {AuxP H 0.0 0.0 0.0 0.0}|{DoListP T}
 	    end
 	 end
 	 
-	  FinalList = {Append {DoListR RealList} {DoListP PokeList}}
+	 FinalList = {Append {DoListR RealList} {DoListP PokeList}}
 
 	 FinalList
       end
@@ -202,10 +242,18 @@ in
    end
 
    fun{CheckMap Map}
-      local RuList PuList CheckP CheckR AuxR AuxP CheckTrueOrFalse in
+      local RuList PuList CheckP CheckR AuxR AuxP CheckTrueOrFalse CheckFormula CheckValue Append in
 	 RuList=Map.ru
 	 PuList=Map.pu
 
+	 fun {Append L1 L2}
+	    case L1
+	    of nil then L2
+	    []H|T then H|{Append T L2}
+	    end
+	 end
+	 
+	 %Fonction qui prend chaque element de PuList et qui renvoie true si l'element est correctement definit
 	 fun {CheckP T}
 	    case T
 	    of primitive(kind:K) then
@@ -218,6 +266,7 @@ in
 	    end
 	 end
 
+	 %Fonction qui prend chaque element de RuList et qui renvoie true si l'element est correctement definit
 	 fun{CheckR T}
 	    case T
 	    of primitive(kind:K) then
@@ -231,19 +280,22 @@ in
 	    else false
 	    end
 	 end
-	 
+
+	 %Fonction qui cree une liste de true et false en fonction de chaque element de RuList
 	 fun{AuxR L}
 	    case L of nil then nil
 	    []H|T then {CheckR H}|{AuxR T}
 	    end
 	 end
 
+	 %Fonction qui cree une liste de true et false en fonction de chaque element de PuList
 	 fun{AuxP L}
 	    case L of nil then nil
 	    []H|T then {CheckP H}|{AuxP T}
 	    end
 	 end
 
+	 %Fonction qui renvoie true si tous les elements de la map sont correctement definis false sinon
 	 fun {CheckTrueOrFalse L}
 	    case L of nil then true
 	    []H|T andthen H==true then {CheckTrueOrFalse T}
