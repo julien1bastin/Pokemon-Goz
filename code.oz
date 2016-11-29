@@ -363,6 +363,38 @@ in
 	    end
 	 end
 
+	 fun{CheckValueFormula X}
+	    case {Float.is X} == true then true
+            %[]time then true
+	    []primitive then true
+	    []minus(V1 V2) then true
+	    []plus(V1 V2) then true
+	    []mult(V1 V2) then true
+	    []'div'(V1 V2) then true
+	    []cos(V) then true
+	    []sin(V) then true
+	    []tan(V) then true
+	    []exp(V) then true
+	    []log(V) then true
+	    []neg(v) then true
+	    []ite(V1 V2 V3) then true
+	    []eq(V1 V2) then true
+	    []ne(V1 V2) then true
+	    []lt(V1 V2) then true
+	    []le(V1 V2) then true
+	    []gt(V1 V2) then true
+	    []ge(V1 V2) then true
+	    else false
+	    end
+	 end
+
+	 fun{CheckInListValueFormula L}
+	    case L of nil then true
+	    []H|T andthen {CheckValueFormula H} == true then {CheckInListValueFormula T}
+	    []H|T andthen {CheckValueFormula H} == false then false
+	    end
+	 end
+
 	 {CheckTrueOrFalse {Append {AuxR RuList} {AuxP PuList}}}
       end
    end
