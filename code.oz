@@ -9,16 +9,16 @@ declare
 
 %====CODE====%
 local
-   MaxTime = 100 % nombre de frame à l'animation
+   MaxTime = 500 % nombre de frame à l'animation
    MyFunction
    Map
    CheckMap
    Extensions = opt(withExtendedFormula:true
 		    withIfThenElse:true
 		    withComparison:true
-		    withTimeWindow:false
-		    withCheckMapEasy:false
-		    withCheckMapComplete:false
+		    withTimeWindow:true
+		    withCheckMapEasy:true
+		    withCheckMapComplete:true
 		   )
 in
    Map = map(ru:
@@ -63,7 +63,7 @@ in
 	     pu:
 		[
 		 %add arenas
-		 translate(dx:187.5 dy:287.5 1:spawn(tmin:20 tmax:80 1:primitive(kind:arena)))
+		 translate(dx:187.5 dy:287.5 1:spawn(tmin:10 tmax:80 1:translate(dx:400.0 dy:400.0 1:primitive(kind:arena))))
 
 		 %add pokestops
 		 translate(dx:100.0 dy:87.5 1:primitive(kind:pokestop))
@@ -217,40 +217,43 @@ in
 	       case K
 	       of primitive(kind:pokemon) then
 		  fun{$ Time}
-		     if Time<I1 andthen Time>=I2 then empty
-		     else pokeitem(kind:pokemon position:pt(x:X y:Y))
+		     if Time>{Int.toFloat I1} andthen Time=<{Int.toFloat I2} then pokeitem(kind:pokemon position:pt(x:{FormulaToFloat X Time} y:{FormulaToFloat Y Time}))
+		     else empty
 		     end
 		  end
 	       []primitive(kind:pokestop) then
 		  fun{$ Time}
-		     if Time<I1 andthen Time>=I2 then empty
-		     else pokeitem(kind:pokemon position:pt(x:X y:Y))
+		     if Time>{Int.toFloat I1} andthen Time=<{Int.toFloat I2} then pokeitem(kind:pokestop position:pt(x:{FormulaToFloat X Time} y:{FormulaToFloat Y Time}))
+		     else empty
 		     end
 		  end
 	       []primitive(kind:arena) then
 		  fun{$ Time}
-		     if Time<I1 andthen Time>=I2 then empty
-		     else pokeitem(kind:pokemon position:pt(x:X y:Y))
+		     if Time>{Int.toFloat I1} andthen Time=<{Int.toFloat I2} then pokeitem(kind:arena position:pt(x:{FormulaToFloat X Time} y:{FormulaToFloat Y Time}))
+		     else empty
 		     end
 		  end
 	       []translate(dx:X1 dy:Y1 1:K) then
 		  case K
 		  of primitive(kind:pokemon) then
 		     fun{$ Time}
-			if Time<I1 andthen Time>=I2 then empty
-			else pokeitem(kind:pokemon position:pt(x:(({FormulaToFloat X1 Time}-{FormulaToFloat X Time})+({FormulaToFloat X1 Time}-{FormulaToFloat X Time})*Time) y:(({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})+({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})*Time)))
+			if Time>{Int.toFloat I1} andthen Time=<{Int.toFloat I2} then pokeitem(kind:pokemon position:pt(x:(({FormulaToFloat X1 Time}-{FormulaToFloat X Time})+(({FormulaToFloat X1 Time}-{FormulaToFloat X Time})*((Time-{Int.toFloat TMin})/{Int.toFloat (TMax-TMin)})))
+														       y:(({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})+(({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})*((Time-{Int.toFloat TMin})/{Int.toFloat (TMax-TMin)})))))
+			else empty
 			end
 		     end
 		  []primitive(kind:pokestop) then
 		     fun{$ Time}
-			if Time<I1 andthen Time>=I2 then empty
-			else pokeitem(kind:pokemon position:pt(x:(({FormulaToFloat X1 Time}-{FormulaToFloat X Time})+({FormulaToFloat X1 Time}-{FormulaToFloat X Time})*Time) y:(({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})+({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})*Time)))
+			if Time>{Int.toFloat I1} andthen Time=<{Int.toFloat I2} then pokeitem(kind:pokestop position:pt(x:(({FormulaToFloat X1 Time}-{FormulaToFloat X Time})+(({FormulaToFloat X1 Time}-{FormulaToFloat X Time})*((Time-{Int.toFloat TMin})/{Int.toFloat (TMax-TMin)})))
+															y:(({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})+(({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})*((Time-{Int.toFloat TMin})/{Int.toFloat (TMax-TMin)})))))
+			else empty
 			end
 		     end
 		  []primitive(kind:arena) then
 		     fun{$ Time}
-			if Time<I1 andthen Time>=I2 then empty
-			else pokeitem(kind:pokemon position:pt(x:(({FormulaToFloat X1 Time}-{FormulaToFloat X Time})+({FormulaToFloat X1 Time}-{FormulaToFloat X Time})*Time) y:(({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})+({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})*Time)))
+			if Time>{Int.toFloat I1} andthen Time=<{Int.toFloat I2} then pokeitem(kind:arena position:pt(x:(({FormulaToFloat X1 Time}-{FormulaToFloat X Time})+(({FormulaToFloat X1 Time}-{FormulaToFloat X Time})*((Time-{Int.toFloat TMin})/{Int.toFloat (TMax-TMin)})))
+														     y:(({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})+(({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})*((Time-{Int.toFloat TMin})/{Int.toFloat (TMax-TMin)})))))
+			else empty
 			end
 		     end
 		  else {AuxP K X+{FormulaToFloat X1 Time} Y+{FormulaToFloat Y1 Time} I1 I2}
@@ -302,7 +305,7 @@ in
    end
 
    fun{CheckMap Map}
-      local RuList PuList CheckP CheckR AuxR AuxP CheckTrueOrFalse CheckFormula CheckValue Append in
+      local RuList PuList CheckP CheckR AuxR AuxP CheckTrueOrFalse CheckValueFormula Append CheckInListValueFormula CheckVF in
 	 RuList=Map.ru
 	 PuList=Map.pu
 
@@ -321,7 +324,8 @@ in
 	       []pokestop then true
 	       []arena then true
 	       end
-	    []translate(dx:X dy:Y 1:K) andthen {Float.is X} andthen {Float.is Y} then {CheckP K}
+	    []translate(dx:X dy:Y 1:K) andthen {CheckValueFormula X} andthen {CheckValueFormula Y} then {CheckP K}
+	    []spawn(tmin:Mi tmax:Ma 1:K) andthen {Int.is Mi} andthen {Int.isMa} then {CheckP K}
 	    else false
 	    end
 	 end
@@ -334,9 +338,9 @@ in
 	       []building then true
 	       []water then true
 	       end
-	    []translate(dx:X dy:Y 1:K) andthen {Float.is X} andthen {Float.is Y} then {CheckR K}
-	    []rotate(angle:A 1:K) andthen {Float.is A} then {CheckR K}
-	    []scale(rx:X ry:Y 1:K) andthen {Float.is X} andthen {Float.is Y} then {CheckR K}
+	    []translate(dx:X dy:Y 1:K) andthen {CheckValueFormula X} andthen {CheckValueFormula Y} then {CheckR K}
+	    []rotate(angle:A 1:K) andthen {CheckValueFormula A} then {CheckR K}
+	    []scale(rx:X ry:Y 1:K) andthen {CheckValueFormula X} andthen {CheckValueFormula Y} then {CheckR K}
 	    else false
 	    end
 	 end
@@ -364,37 +368,39 @@ in
 	 end
 
 	 fun{CheckValueFormula X}
-	    case {Float.is X} == true then true
-            %[]time then true
-	    []primitive then true
-	    []minus(V1 V2) then true
-	    []plus(V1 V2) then true
-	    []mult(V1 V2) then true
-	    []'div'(V1 V2) then true
-	    []cos(V) then true
-	    []sin(V) then true
-	    []tan(V) then true
-	    []exp(V) then true
-	    []log(V) then true
-	    []neg(v) then true
-	    []ite(V1 V2 V3) then true
-	    []eq(V1 V2) then true
-	    []ne(V1 V2) then true
-	    []lt(V1 V2) then true
-	    []le(V1 V2) then true
-	    []gt(V1 V2) then true
-	    []ge(V1 V2) then true
+	    case X
+	    of M andthen {Float.is M} then true
+            []time then true
+	    []minus(V1 V2) then {CheckVF V1 V2}
+	    []plus(V1 V2) then {CheckVF V1 V2}
+	    []mult(V1 V2) then {CheckVF V1 V2}
+	    []'div'(V1 V2) then {CheckVF V1 V2}
+	    []cos(V) then {CheckValueFormula V}
+	    []sin(V) then {CheckValueFormula V}
+	    []tan(V) then {CheckValueFormula V}
+	    []exp(V) then {CheckValueFormula V}
+	    []log(V) then {CheckValueFormula V}
+	    []neg(V) then {CheckValueFormula V}
+	    []ite(V1 V2 V3) then
+	       if {CheckValueFormula V1} andthen {CheckValueFormula V2} andthen {CheckValueFormula V3} then true
+	       else false
+	       end
+	    []eq(V1 V2) then {CheckVF V1 V2}
+	    []ne(V1 V2) then {CheckVF V1 V2}
+	    []lt(V1 V2) then {CheckVF V1 V2}
+	    []le(V1 V2) then {CheckVF V1 V2}
+	    []gt(V1 V2) then {CheckVF V1 V2}
+	    []ge(V1 V2) then {CheckVF V1 V2}
 	    else false
 	    end
 	 end
 
-	 fun{CheckInListValueFormula L}
-	    case L of nil then true
-	    []H|T andthen {CheckValueFormula H} == true then {CheckInListValueFormula T}
-	    []H|T andthen {CheckValueFormula H} == false then false
+	 fun{CheckVF V1 V2}
+	    if {CheckValueFormula V1} andthen {CheckValueFormula V2} then true
+	    else false
 	    end
 	 end
-
+	 	 
 	 {CheckTrueOrFalse {Append {AuxR RuList} {AuxP PuList}}}
       end
    end
