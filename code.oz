@@ -63,8 +63,7 @@ in
 	     pu:
 		[
 		 %add arenas
-		 translate(dx:time %187.5
-			   dy:287.5 1:primitive(kind:arena)) 
+		 translate(dx:187.5 dy:287.5 1:spawn(tmin:20 tmax:80 1:primitive(kind:arena)))
 
 		 %add pokestops
 		 translate(dx:100.0 dy:87.5 1:primitive(kind:pokestop))
@@ -214,7 +213,68 @@ in
 	       []primitive(kind:arena) then fun{$ Time} pokeitem(kind:arena position:pt(x:X+{FormulaToFloat X1 Time} y:Y+{FormulaToFloat Y1 Time})) end
 	       else {AuxP K X+{FormulaToFloat X1 TMin} Y+{FormulaToFloat Y1 TMin} TMin TMax}
 	       end
-	    []spawn(tmin:I1 tmax:I2 1:K) then {AuxP K X Y I1 I2}
+	    []spawn(tmin:I1 tmax:I2 1:K) then
+	       case K
+	       of primitive(kind:pokemon) then
+		  fun{$ Time}
+		     if Time<I1 andthen Time>=I2 then empty
+		     else pokeitem(kind:pokemon position:pt(x:X y:Y))
+		     end
+		  end
+	       []primitive(kind:pokestop) then
+		  fun{$ Time}
+		     if Time<I1 andthen Time>=I2 then empty
+		     else pokeitem(kind:pokemon position:pt(x:X y:Y))
+		     end
+		  end
+	       []primitive(kind:arena) then
+		  fun{$ Time}
+		     if Time<I1 andthen Time>=I2 then empty
+		     else pokeitem(kind:pokemon position:pt(x:X y:Y))
+		     end
+		  end
+	       []translate(dx:X1 dy:Y1 1:K) then
+		  case K
+		  of primitive(kind:pokemon) then
+		     fun{$ Time}
+			if Time<I1 andthen Time>=I2 then empty
+			else pokeitem(kind:pokemon position:pt(x:(({FormulaToFloat X1 Time}-{FormulaToFloat X Time})+({FormulaToFloat X1 Time}-{FormulaToFloat X Time})*Time) y:(({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})+({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})*Time)))
+			end
+		     end
+		  []primitive(kind:pokestop) then
+		     fun{$ Time}
+			if Time<I1 andthen Time>=I2 then empty
+			else pokeitem(kind:pokemon position:pt(x:(({FormulaToFloat X1 Time}-{FormulaToFloat X Time})+({FormulaToFloat X1 Time}-{FormulaToFloat X Time})*Time) y:(({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})+({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})*Time)))
+			end
+		     end
+		  []primitive(kind:arena) then
+		     fun{$ Time}
+			if Time<I1 andthen Time>=I2 then empty
+			else pokeitem(kind:pokemon position:pt(x:(({FormulaToFloat X1 Time}-{FormulaToFloat X Time})+({FormulaToFloat X1 Time}-{FormulaToFloat X Time})*Time) y:(({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})+({FormulaToFloat Y1 Time}-{FormulaToFloat Y Time})*Time)))
+			end
+		     end
+		  else {AuxP K X+{FormulaToFloat X1 Time} Y+{FormulaToFloat Y1 Time} I1 I2}
+		  end
+	       else
+		  if I1>TMax then fun{$ Time} empty end
+		  elseif I2<TMin then fun{$ Time} empty end
+		  else
+		     local
+			fun {Min A B}
+			   if A<B then A
+			   else B
+			   end
+			end
+			fun {Max A B}
+			   if A>B then A
+			   else B
+			   end
+			end
+		     in
+			{AuxP K X Y {Max TMin I1} {Min TMax I2}}
+		     end
+		  end
+	       end
 	    end
 	 end
 	 
