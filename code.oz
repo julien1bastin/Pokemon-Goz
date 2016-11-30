@@ -81,10 +81,10 @@ in
 		])
 
    fun{MyFunction Map}
-      local FinalList RealList PokeList DoListR DoListP AuxR AuxP ValueToFloat FormulaToFloat Append in
+      local FinalList RealList PokeList DoListR DoListP AuxR AuxP ValueToFloat FormulaToFloat Append DoFinalListP DoFinalListR in
 	 RealList=Map.ru
 	 PokeList=Map.pu
-
+	 
 	 fun {Append L1 L2}
 	    case L1
 	    of nil then L2
@@ -160,63 +160,39 @@ in
 	 
 	 %Fonction qui prend un <RealUniverseItem> et ses coordonnees en parametre et qui renvoie une fonction placant cet item correctement sur la map
 	 fun {AuxR T1 X0 Y0 X1 Y1}
-	    case T1
+	    case T1 
 	    of primitive(kind:K) then
 	       case K
-	       of road then fun {$ Time} realitem(kind:K p1:pt(x:X0 y:Y0) p2:pt(x:X1 y:Y1)) end
-	       []building then fun {$ Time} realitem(kind:K p1:pt(x:X0 y:Y0) p2:pt(x:X0 y:Y1)
-							      p3:pt(x:X1 y:Y1) p4:pt(x:X1 y:Y0)) end
-	       []water then fun {$ Time} realitem(kind:K p1:pt(x:X0 y:Y0) p2:pt(x:X0 y:Y1)
-							      p3:pt(x:X1 y:Y1) p4:pt(x:X1 y:Y0)) end
+	       of road then fun {$ Time} realitem(kind:K p1:pt(x:{ValueToFloat X0} y:{ValueToFloat Y0}) p2:pt(x:{ValueToFloat X1} y:{ValueToFloat Y1})) end
+	       []building then fun {$ Time} realitem(kind:K p1:pt(x:{ValueToFloat X0} y:{ValueToFloat Y0}) p2:pt(x:{ValueToFloat X0} y:{ValueToFloat Y1}) p3:pt(x:{ValueToFloat X1} y:{ValueToFloat Y1}) p4:pt(x:{ValueToFloat X1} y:{ValueToFloat Y0})) end
+	       []water then fun {$ Time}  realitem(kind:K p1:pt(x:{ValueToFloat X0} y:{ValueToFloat Y0}) p2:pt(x:{ValueToFloat X0} y:{ValueToFloat Y1}) p3:pt(x:{ValueToFloat X1} y:{ValueToFloat Y1}) p4:pt(x:{ValueToFloat X1} y:{ValueToFloat Y0})) end
 	       end
-	    []H|T then
-	       local Aux in
-		  fun {Aux A X0 Y0 X1 Y1}
-		     case A
-		     of nil then nil
-		     []H|T then {AuxR H X0 Y0 X1 Y1}|{Aux T X0 Y0 X1 Y1}
-		     end
-		  end
-		  {Aux T1 X0 Y0 X1 Y1}
-	       end
-	       
-	    []translate(dx:X dy:Y 1:K) then {AuxR K X0+{ValueToFloat X} Y0+{ValueToFloat Y} X1+{ValueToFloat X} Y1+{ValueToFloat Y}}
-	    []scale(rx:X ry:Y 1:K) then {AuxR K X0*{ValueToFloat X} Y0*{ValueToFloat Y} X1*{ValueToFloat X} Y1*{ValueToFloat Y}}
-	    []rotate(angle:A 1:K)then {AuxR K X0 Y0 X1*{Float.cos {ValueToFloat A}}+Y1*{Float.sin {ValueToFloat A}} ~X1*{Float.sin {ValueToFloat A}}+Y1*{Float.cos {ValueToFloat A}}}
+	    []translate(dx:X dy:Y 1:K) then {DoListR K X0+{ValueToFloat X} Y0+{ValueToFloat Y} X1+{ValueToFloat X} Y1+{ValueToFloat Y}}
+	    []scale(rx:X ry:Y 1:K) then {DoListR K X0*{ValueToFloat X} Y0*{ValueToFloat Y} X1*{ValueToFloat X} Y1*{ValueToFloat Y}}
+	    []rotate(angle:A 1:K)then {DoListR K X0 Y0 X1*{Float.cos {ValueToFloat A}}+Y1*{Float.sin {ValueToFloat A}} ~X1*{Float.sin {ValueToFloat A}}+Y1*{Float.cos {ValueToFloat A}}}
 	    end
 	 end
-
+	 
 	 %Fonction qui prend un <PokeUniversePOI> et ses coordonnee en parametre et renvoie une fonction placant correctement cet item sur la map
-	 fun{AuxP T X Y TMin TMax}
+	 fun {AuxP T X Y TMin TMax}
 	    case T
 	    of primitive(kind:K) then
 	       case K
-	       of pokemon then fun{$ Time} pokeitem(kind:K position:pt(x:{FormulaToFloat X Time} y:{FormulaToFloat Y Time})) end
+	       of pokemon then fun{$ Time} pokeitem(kind:K position:pt(x:{FormulaToFloat X Time} y:{FormulaToFloat Y Time})) end 
 	       []pokestop then fun{$ Time} pokeitem(kind:K position:pt(x:{FormulaToFloat X Time} y:{FormulaToFloat Y Time})) end
 	       []arena then fun{$ Time} pokeitem(kind:K position:pt(x:{FormulaToFloat X Time} y:{FormulaToFloat Y Time})) end
-	       end
-	       
-	    []H|T then
-	       local Aux in
-		  fun {Aux A X Y}
-		     case A
-		     of nil then nil
-		     []H|T then {AuxP H X Y TMin TMax}|{Aux T X Y}
-		     end
-		  end
-		  {Aux T X Y}
-	       end
+	       end	  
 	    []translate(dx:X1 dy:Y1 1:K) then
 	       case K 
 	       of primitive(kind:pokemon) then fun{$ Time} pokeitem(kind:pokemon position:pt(x:X+{FormulaToFloat X1 Time} y:Y+{FormulaToFloat Y1 Time})) end
 	       []primitive(kind:pokestop) then fun{$ Time} pokeitem(kind:pokestop position:pt(x:X+{FormulaToFloat X1 Time} y:Y+{FormulaToFloat Y1 Time})) end
 	       []primitive(kind:arena) then fun{$ Time} pokeitem(kind:arena position:pt(x:X+{FormulaToFloat X1 Time} y:Y+{FormulaToFloat Y1 Time})) end
-	       else {AuxP K X+{FormulaToFloat X1 TMin} Y+{FormulaToFloat Y1 TMin} TMin TMax}
+	       else {DoListP K X+{FormulaToFloat X1 TMin} Y+{FormulaToFloat Y1 TMin} TMin TMax}
 	       end
 	    []spawn(tmin:I1 tmax:I2 1:K) then
 	       case K
 	       of primitive(kind:pokemon) then
-		  fun{$ Time}
+		 fun{$ Time}
 		     if Time>{Int.toFloat I1} andthen Time=<{Int.toFloat I2} then pokeitem(kind:pokemon position:pt(x:{FormulaToFloat X Time} y:{FormulaToFloat Y Time}))
 		     else empty
 		     end
@@ -256,7 +232,7 @@ in
 			else empty
 			end
 		     end
-		  else {AuxP K X+{FormulaToFloat X1 Time} Y+{FormulaToFloat Y1 Time} I1 I2}
+		  else {DoListP K X+{FormulaToFloat X1 Time} Y+{FormulaToFloat Y1 Time} I1 I2}
 		  end
 	       else
 		  if I1>TMax then fun{$ Time} empty end
@@ -274,30 +250,45 @@ in
 			   end
 			end
 		     in
-			{AuxP K X Y {Max TMin I1} {Min TMax I2}}
+			{DoListP K X Y {Max TMin I1} {Min TMax I2}}
 		     end
 		  end
 	       end
 	    end
 	 end
-	 
+      	    
 	 %Fonction qui parcours la liste des elements du realuniverse de la map (Map.ru) et cree une liste des fonctions a renvoyer pour les placer
-	 fun {DoListR L}
+	 fun {DoListR L X0 Y0 X1 Y1}
 	    case L
 	    of nil then nil
-	    []H|T then {AuxR H 0.0 0.0 1.0 1.0}|{DoListR T}
+	    []H|T then {AuxR H X0 Y0 X1 Y1}|{DoListR T X0 Y0 X1 Y1}
+	    else {AuxR L X0 Y0 X1 Y1}
 	    end
 	 end
 
 	 %Fonction qui parcours la liste des elements du pokeuniverse de la map (Map.pu) et cree une liste des fonctions a renvoyer pour les placer
-	 fun {DoListP L}
+	 fun {DoListP L X Y TMin TMax}
 	    case L
 	    of nil then nil
-	    []H|T then {AuxP H 0.0 0.0 0.0 0.0}|{DoListP T}
+	    []H|T then {AuxP H X Y TMin TMax}|{DoListP T X Y TMin TMax}
+	    else {AuxP L X Y TMin TMax}
+	    end
+	 end
+
+	 fun {DoFinalListR L}
+	    case L of nil then nil
+	    []H|T then {DoListR H 0.0 0.0 1.0 1.0}|{DoFinalListR T}
+	    end
+	 end
+
+	 fun {DoFinalListP L}
+	    case L of nil then nil
+	    []H|T then {DoListP H 0.0 0.0 0 0}|{DoFinalListP T}
 	    end
 	 end
 	 
-	 FinalList = {Append {DoListR RealList} {DoListP PokeList}}
+	 
+	 FinalList = {Append {DoFinalListR RealList} {DoFinalListP PokeList}}
 
 	 FinalList
       end
