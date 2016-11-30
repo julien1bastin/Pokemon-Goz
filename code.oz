@@ -63,7 +63,7 @@ in
 	     pu:
 		[
 		 %add arenas
-		 translate(dx:187.5 dy:287.5 1:[spawn(tmin:1 tmax:80 1:[translate(dx:400.0 dy:400.0 1:[primitive(kind:arena)])])])
+		 translate(dx:187.5 dy:287.5 1:[spawn(tmin:5 tmax:80 1:[translate(dx:100.0 dy:100.0 1:[primitive(kind:arena)])])])
 
 		 %add pokestops
 		 translate(dx:100.0 dy:87.5 1:[spawn(tmin:2 tmax:5 1:[primitive(kind:pokestop)])])
@@ -182,24 +182,25 @@ in
 	 end
 	 
 	 %Fonction qui prend un <PokeUniversePOI> et ses coordonnee en parametre et renvoie une fonction placant correctement cet item sur la map
-	 fun {AuxP T X0 Y0 X1 Y1 TMin TMax Acc}
+	 fun {AuxP T X0 Y0 X1 Y1 TMin TMax Spawn Translate}
 	    case T
-	    of primitive(kind:K) andthen Acc==false then
+	    of primitive(kind:K) andthen Spawn==true andthen Translate==true then
+	       fun{$ Time}
+		  if Time>{Int.toFloat TMin} andthen Time=<{Int.toFloat TMax} then pokeitem(kind:K position:pt(x:(({FormulaToFloat X0 Time})+(({FormulaToFloat X1 Time}-{FormulaToFloat X0 Time})*((Time-{Int.toFloat TMin})/{Int.toFloat (TMax-TMin)})))
+													       y:(({FormulaToFloat Y0 Time})+(({FormulaToFloat Y1 Time}-{FormulaToFloat Y0 Time})*((Time-{Int.toFloat TMin})/{Int.toFloat (TMax-TMin)})))))
+		  else empty
+		  end
+	       end
+	    []primitive(kind:K) then
 	       fun{$ Time}
 		  if Time>{Int.toFloat TMin} andthen Time=<{Int.toFloat TMax} then pokeitem(kind:K position:pt(x:{FormulaToFloat X0 Time} y:{FormulaToFloat Y0 Time}))
 		  else empty
 		  end
 	       end
-	    []primitive(kind:K) andthen Acc==true then
-	       fun{$ Time}
-		  if Time>{Int.toFloat TMin} andthen Time=<{Int.toFloat TMax} then pokeitem(kind:K position:pt(x:(({FormulaToFloat X1 Time}-{FormulaToFloat X0 Time})+(({FormulaToFloat X1 Time}-{FormulaToFloat X0 Time})*((Time-{Int.toFloat TMin})/{Int.toFloat (TMax-TMin)})))
-														 y:(({FormulaToFloat Y1 Time}-{FormulaToFloat Y0 Time})+(({FormulaToFloat Y1 Time}-{FormulaToFloat Y0 Time})*((Time-{Int.toFloat TMin})/{Int.toFloat (TMax-TMin)})))))
-		  else empty
-		  end
-	       end
-	    []translate(dx:X dy:Y 1:K) andthen Acc==false then {DoListP K X0+{FormulaToFloat X TMin} Y0+{FormulaToFloat Y TMin} X1+{FormulaToFloat X TMin} Y1+{FormulaToFloat Y TMin} TMin TMax false}
-	    []translate(dx:X dy:Y 1:K) andthen Acc==true then {DoListP K X0 Y0 X1+{FormulaToFloat X TMin} Y1+{FormulaToFloat Y TMin} TMin TMax true}
-	    []spawn(tmin:I1 tmax:I2 1:K) andthen Acc==true then
+	    
+	    []translate(dx:X dy:Y 1:K) andthen Spawn==false then {DoListP K X0+{FormulaToFloat X TMin} Y0+{FormulaToFloat Y TMin} X1+{FormulaToFloat X TMin} Y1+{FormulaToFloat Y TMin} TMin TMax false false}
+	    []translate(dx:X dy:Y 1:K) andthen Spawn==true then {DoListP K X0 Y0 {FormulaToFloat X TMin} {FormulaToFloat Y TMin} TMin TMax true true}
+	    []spawn(tmin:I1 tmax:I2 1:K) andthen Spawn==true then
 	        if I1>TMax then fun{$ Time} empty end
 		elseif I2<TMin then fun{$ Time} empty end
 		else
@@ -215,10 +216,10 @@ in
 			 end
 		      end
 		   in
-		      {DoListP K X0 Y0 X1 Y1 {Max TMin I1} {Min TMax I2} true}
+		      {DoListP K X0 Y0 X1 Y1 {Max TMin I1} {Min TMax I2} true Translate}
 		   end
 		end
-	    []spawn(tmin:I1 tmax:I2 1:K) andthen Acc==false then {DoListP K X0 Y0 X1 Y1 I1 I2 true}
+	    []spawn(tmin:I1 tmax:I2 1:K) andthen Spawn==false then {DoListP K X0 Y0 X1 Y1 I1 I2 true Translate}
 	    end
 	 end
 	       	    
@@ -232,11 +233,11 @@ in
 	 end
 
 	 %Fonction qui parcours la liste des elements du pokeuniverse de la map (Map.pu) et cree une liste des fonctions a renvoyer pour les placer
-	 fun {DoListP L X0 Y0 X1 Y1 TMin TMax Acc}
+	 fun {DoListP L X0 Y0 X1 Y1 TMin TMax Spawn Translate}
 	    case L
 	    of nil then nil
-	    []H|T then {AuxP H X0 Y0 X1 Y1 TMin TMax Acc}|{DoListP T X0 Y0 X1 Y1 TMin TMax Acc} 
-	    else {AuxP L X0 Y0 X1 Y1 TMin TMax Acc}
+	    []H|T then {AuxP H X0 Y0 X1 Y1 TMin TMax Spawn Translate}|{DoListP T X0 Y0 X1 Y1 TMin TMax Spawn Translate} 
+	    else {AuxP L X0 Y0 X1 Y1 TMin TMax Spawn Translate}
 	    end
 	 end
 
@@ -248,7 +249,7 @@ in
 
 	 fun {DoFinalListP L}
 	    case L of nil then nil
-	    []H|T then {DoListP H 0.0 0.0 0.0 0.0 0 MaxTime false}|{DoFinalListP T}
+	    []H|T then {DoListP H 0.0 0.0 0.0 0.0 0 MaxTime false false}|{DoFinalListP T}
 	    end
 	 end
 	 
