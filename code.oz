@@ -262,7 +262,7 @@ in
    end
 
    fun{CheckMap Map}
-      local RuList PuList CheckP CheckR AuxR AuxP CheckTrueOrFalse CheckValueFormula Append CheckInListValueFormula CheckVF in
+      local RuList PuList CheckP CheckR AuxR AuxP CheckTrueOrFalse CheckValueFormula Append CheckInListValueFormula CheckVF FlattenList CheckLP CheckLR in
 	 RuList=Map.ru
 	 PuList=Map.pu
 
@@ -270,6 +270,13 @@ in
 	    case L1
 	    of nil then L2
 	    []H|T then H|{Append T L2}
+	    end
+	 end
+
+	 fun {FlattenList L}
+	    case L of H|T then {Append {FlattenList H} {FlattenList T}}
+	    []nil then nil
+	    else [L]
 	    end
 	 end
 	 
@@ -280,41 +287,42 @@ in
 	       case K of pokemon then true
 	       []pokestop then true
 	       []arena then true
+	       else false
 	       end
-	    []translate(dx:X dy:Y 1:K) andthen {CheckValueFormula X} andthen {CheckValueFormula Y} then {CheckP K}
-	    []spawn(tmin:Mi tmax:Ma 1:K) andthen {Int.is Mi} andthen {Int.isMa} then {CheckP K}
+	    []translate(dx:X dy:Y 1:K) andthen {CheckValueFormula X} andthen {CheckValueFormula Y} then {CheckLP K}
+	    []spawn(tmin:Mi tmax:Ma 1:K) andthen {Int.is Mi} andthen {Int.isMa} then {CheckLP K}
 	    else false
 	    end
 	 end
+
+	 fun {CheckLP L}
+	    case L of nil then true
+	    []H|T then {CheckP H}|{CheckLP T}
+	    else false
+	    end
+	 end
+	 
 
 	 %Fonction qui prend chaque element de RuList et qui renvoie true si l'element est correctement definit
 	 fun{CheckR T}
 	    case T
-	    of nil then true
-	    []H|T then true
-	    []primitive(kind:K) then
+	    of primitive(kind:K) then
 	       case K of road then true
 	       []building then true
 	       []water then true
+	       else false
 	       end
-	    []translate(dx:X dy:Y 1:K) andthen {CheckValueFormula X} andthen {CheckValueFormula Y} then {CheckR K}
-	    []rotate(angle:A 1:K) andthen {CheckValueFormula A} then {CheckR K}
-	    []scale(rx:X ry:Y 1:K) andthen {CheckValueFormula X} andthen {CheckValueFormula Y} then {CheckR K}
+	    []translate(dx:X dy:Y 1:K) andthen {CheckValueFormula X} andthen {CheckValueFormula Y} then {CheckLR K}
+	    []rotate(angle:A 1:K) andthen {CheckValueFormula A} then {CheckLR K}
+	    []scale(rx:X ry:Y 1:K) andthen {CheckValueFormula X} andthen {CheckValueFormula Y} then {CheckLR K}
 	    else false
 	    end
 	 end
 
-	 %Fonction qui cree une liste de true et false en fonction de chaque element de RuList
-	 fun{AuxR L}
-	    case L of nil then nil
-	    []H|T then {CheckR H}|{AuxR T}
-	    end
-	 end
-
-	 %Fonction qui cree une liste de true et false en fonction de chaque element de PuList
-	 fun{AuxP L}
-	    case L of nil then nil
-	    []H|T then {CheckP H}|{AuxP T}
+	 fun {CheckLR L}
+	    case L of nil then true
+	    []H|T then {CheckR H}|{CheckLR T}
+	    else false
 	    end
 	 end
 
@@ -360,7 +368,7 @@ in
 	    end
 	 end
 	 	 
-	 {CheckTrueOrFalse {Append {AuxR RuList} {AuxP PuList}}}
+	 {CheckTrueOrFalse {Append {FlattenList {CheckLR RuList}} {FlattenList{CheckLP PuList}}}}
       end
    end
    
