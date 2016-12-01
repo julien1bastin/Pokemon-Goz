@@ -339,6 +339,7 @@ in
 	    end
 	 end
 
+	 %Fonction qui verifie les formules et les values
 	 fun{CheckValueFormula X}
 	    case X
 	    of M andthen {Float.is M} then true
