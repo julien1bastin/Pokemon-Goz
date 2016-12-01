@@ -12,6 +12,9 @@ local
    MaxTime = 500 % nombre de frame à l'animation
    MyFunction
    Map
+   Map1
+   Map2
+   Map3
    CheckMap
    Extensions = opt(withExtendedFormula:true
 		    withIfThenElse:true
@@ -79,7 +82,7 @@ in
 		 translate(dx:450.0 dy:337.5 1:[primitive(kind:pokemon)])
 		 translate(dx:100.0 dy:487.5 1:[primitive(kind:pokemon)])
 		])
-
+      
    fun{MyFunction Map}
       local FinalList RealList PokeList DoListR DoListP AuxR AuxP ValueToFloat FormulaToFloat Append DoFinalListP DoFinalListR FlattenList in
 	 RealList=Map.ru
@@ -172,6 +175,7 @@ in
 	    of primitive(kind:K) then
 	       case K
 	       of road then fun {$ Time} realitem(kind:K p1:pt(x:{ValueToFloat X0} y:{ValueToFloat Y0}) p2:pt(x:{ValueToFloat X1} y:{ValueToFloat Y1})) end
+	       []road andthen {ValueToFloat X0}==0.0 andthen {ValueToFloat Y0}==0.0 andthen {ValueToFloat X1}==1.0 andthen {ValueToFloat Y1}==1.0 then fun{$ Time} realitem(kind:K p1:pt(x:0.0 y:0.0) p2:pt(x:1.0 y:0.0)) end
 	       []building then fun {$ Time} realitem(kind:K p1:pt(x:{ValueToFloat X0} y:{ValueToFloat Y0}) p2:pt(x:{ValueToFloat X0} y:{ValueToFloat Y1}) p3:pt(x:{ValueToFloat X1} y:{ValueToFloat Y1}) p4:pt(x:{ValueToFloat X1} y:{ValueToFloat Y0})) end
 	       []water then fun {$ Time}  realitem(kind:K p1:pt(x:{ValueToFloat X0} y:{ValueToFloat Y0}) p2:pt(x:{ValueToFloat X0} y:{ValueToFloat Y1}) p3:pt(x:{ValueToFloat X1} y:{ValueToFloat Y1}) p4:pt(x:{ValueToFloat X1} y:{ValueToFloat Y0})) end
 	       end
