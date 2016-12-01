@@ -12,9 +12,6 @@ local
    MaxTime = 500 % nombre de frame à l'animation
    MyFunction
    Map
-   Map1
-   Map2
-   Map3
    CheckMap
    Extensions = opt(withExtendedFormula:true
 		    withIfThenElse:true
@@ -87,7 +84,8 @@ in
       local FinalList RealList PokeList DoListR DoListP AuxR AuxP ValueToFloat FormulaToFloat Append DoFinalListP DoFinalListR FlattenList in
 	 RealList=Map.ru
 	 PokeList=Map.pu
-	 
+
+	 %Redefinition de la fonction Append
 	 fun {Append L1 L2}
 	    case L1
 	    of nil then L2
@@ -95,6 +93,7 @@ in
 	    end
 	 end
 
+	 %Redefinition de la fonction Flatten
 	 fun {FlattenList L}
 	    case L
 	    of H|T then {Append {FlattenList H} {FlattenList T}}
@@ -169,7 +168,7 @@ in
 
 	 
 	 
-	 %Fonction qui prend un <RealUniverseItem> et ses coordonnees en parametre et qui renvoie une fonction placant cet item correctement sur la map
+	 %Fonction qui prend un <RealUniverseItem> et ses coordonnees en parametre et qui renvoie une fonction placant cet item dans le sens inverse de la priorité des opérations sur la map
 	 fun {AuxR T1 X0 Y0 X1 Y1}
 	    case T1 
 	    of primitive(kind:K) then
@@ -185,7 +184,7 @@ in
 	    end
 	 end
 	 
-	 %Fonction qui prend un <PokeUniversePOI> et ses coordonnee en parametre et renvoie une fonction placant correctement cet item sur la map
+	 %Fonction qui prend un <PokeUniversePOI> et ses coordonnee en parametre et renvoie une fonction placant cet item dans le sens inverse de la priorité des opérations sur la map
 	 fun {AuxP T X0 Y0 X1 Y1 TMin TMax Spawn Translate}
 	    case T
 	    of primitive(kind:K) andthen Spawn==true andthen Translate==true then
@@ -227,7 +226,7 @@ in
 	    end
 	 end
 	       	    
-	 %Fonction qui parcours la liste des elements du realuniverse de la map (Map.ru) et cree une liste des fonctions a renvoyer pour les placer
+	 %Fonction qui parcours un element de la list Map.ru et qui renvoie la liste des fonction generees par cet element
 	 fun {DoListR L X0 Y0 X1 Y1}
 	    case L
 	    of nil then nil
@@ -236,7 +235,7 @@ in
 	    end
 	 end
 
-	 %Fonction qui parcours la liste des elements du pokeuniverse de la map (Map.pu) et cree une liste des fonctions a renvoyer pour les placer
+	 %Fonction qui parcours un element de la list Map.ru et qui renvoie la liste des fonction generees par cet element
 	 fun {DoListP L X0 Y0 X1 Y1 TMin TMax Spawn Translate}
 	    case L
 	    of nil then nil
@@ -245,12 +244,14 @@ in
 	    end
 	 end
 
+	 %Fonction qui parcours la liste des elements du realuniverse de la map (Map.ru) et cree une liste des fonctions a renvoyer pour les placer
 	 fun {DoFinalListR L}
 	    case L of nil then nil
 	    []H|T then {DoListR H 0.0 0.0 1.0 1.0}|{DoFinalListR T}
 	    end
 	 end
 
+	 %Fonction qui parcours la liste des elements du pokeuniverse de la map (Map.pu) et cree une liste des fonctions a renvoyer pour les placer
 	 fun {DoFinalListP L}
 	    case L of nil then nil
 	    []H|T then {DoListP H 0.0 0.0 0.0 0.0 0 MaxTime false false}|{DoFinalListP T}
@@ -270,6 +271,7 @@ in
 	 RuList=Map.ru
 	 PuList=Map.pu
 
+	 %Redefinition de la fonction Append
 	 fun {Append L1 L2}
 	    case L1
 	    of nil then L2
@@ -277,6 +279,7 @@ in
 	    end
 	 end
 
+	 %Redefinition de la fonction Flatten
 	 fun {FlattenList L}
 	    case L of H|T then {Append {FlattenList H} {FlattenList T}}
 	    []nil then nil
@@ -284,7 +287,7 @@ in
 	    end
 	 end
 	 
-	 %Fonction qui prend chaque element de PuList et qui renvoie true si l'element est correctement definit
+	 %Fonctions qui prennent chaque element de PuList et qui renvoie true si l'element est correctement definit
 	 fun {CheckP T}
 	    case T
 	    of primitive(kind:K) then
@@ -298,7 +301,6 @@ in
 	    else false
 	    end
 	 end
-
 	 fun {CheckLP L}
 	    case L of nil then true
 	    []H|T then {CheckP H}|{CheckLP T}
@@ -307,7 +309,7 @@ in
 	 end
 	 
 
-	 %Fonction qui prend chaque element de RuList et qui renvoie true si l'element est correctement definit
+	 %Fonctions qui prennent chaque element de RuList et qui renvoie true si l'element est correctement definit
 	 fun{CheckR T}
 	    case T
 	    of primitive(kind:K) then
@@ -322,7 +324,6 @@ in
 	    else false
 	    end
 	 end
-
 	 fun {CheckLR L}
 	    case L of nil then true
 	    []H|T then {CheckR H}|{CheckLR T}
@@ -366,7 +367,7 @@ in
 	    end
 	 end
 
-	 fun{CheckVF V1 V2}
+	  fun{CheckVF V1 V2}
 	    if {CheckValueFormula V1} andthen {CheckValueFormula V2} then true
 	    else false
 	    end
