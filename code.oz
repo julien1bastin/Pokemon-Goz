@@ -226,7 +226,7 @@ in
 	    end
 	 end
 	       	    
-	 %Fonction qui parcours un element de la list Map.ru et qui renvoie la liste des fonction generees par cet element
+	 %Fonction qui parcours un element de la list Map.ru et qui renvoie la liste des fonctions generees par cet element
 	 fun {DoListR L X0 Y0 X1 Y1}
 	    case L
 	    of nil then nil
