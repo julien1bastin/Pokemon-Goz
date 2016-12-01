@@ -9,7 +9,7 @@ declare
 
 %====CODE====%
 local
-   MaxTime = 500 % nombre de frame à l'animation
+   MaxTime = 100 % nombre de frame à l'animation
    MyFunction
    Map
    CheckMap
@@ -63,21 +63,21 @@ in
 	     pu:
 		[
 		 %add arenas
-		 translate(dx:187.5 dy:287.5 1:[spawn(tmin:5 tmax:80 1:[translate(dx:100.0 dy:100.0 1:[primitive(kind:arena)])])])
+		 translate(dx:187.5 dy:287.5 1:[spawn(tmin:0 tmax:100 1:[translate(dx:75.0 dy:250.0 1:[primitive(kind:arena)])])])
 
 		 %add pokestops
-		 translate(dx:100.0 dy:87.5 1:[spawn(tmin:2 tmax:5 1:[primitive(kind:pokestop)])])
-		 translate(dx:300.0 dy:137.5 1:[primitive(kind:pokestop)])
-		 translate(dx:225.0 dy:437.5 1:[primitive(kind:pokestop)])
+		 translate(dx:100.0 dy:87.5 1:[spawn(tmin:0 tmax:33 1:[translate(dx:37.5 dy:100.0 1:[primitive(kind:pokestop)])])])
+		 translate(dx:300.0 dy:137.5 1:[spawn(tmin:33 tmax:66 1:[translate(dx:350.0 dy:50.0 1:[primitive(kind:pokestop)])])])
+		 translate(dx:225.0 dy:437.5 1:[spawn(tmin:66 tmax:100 1:[translate(dx:387.5 dy:437.5 1:[primitive(kind:pokestop)])])])
 
 		 %add pokemons
-		 translate(dx:237.5 dy:137.5 1:[primitive(kind:pokemon)])
-		 translate(dx:200.0 dy:212.5 1:[primitive(kind:pokemon)])
-		 translate(dx:462.5 dy:150.0 1:[primitive(kind:pokemon)])
-		 translate(dx:225.0 dy:275.0 1:[primitive(kind:pokemon)])
-		 translate(dx:462.5 dy:300.0 1:[primitive(kind:pokemon)])
-		 translate(dx:450.0 dy:337.5 1:[primitive(kind:pokemon)])
-		 translate(dx:100.0 dy:487.5 1:[primitive(kind:pokemon)])
+		 translate(dx:237.5 dy:137.5 1:[spawn(tmin:0 tmax:40 1:[translate(dx:175.0 dy:100.0 1:[primitive(kind:pokemon)])])])
+		 translate(dx:200.0 dy:212.5 1:[spawn(tmin:30 tmax:80 1:[translate(dx:106.25 dy:131.25 1:[primitive(kind:pokemon)])])])
+		 translate(dx:462.5 dy:150.0 1:[spawn(tmin:60 tmax:100 1:[translate(dx:400.0 dy:143.75 1:[primitive(kind:pokemon)])])])
+		 translate(dx:225.0 dy:275.0 1:[spawn(tmin:60 tmax:100 1:[translate(dx:312.5 dy:231.25 1:[primitive(kind:pokemon)])])])
+		 translate(dx:462.5 dy:300.0 1:[spawn(tmin:0 tmax:40 1:[translate(dx:312.5 dy:343.75 1:[primitive(kind:pokemon)])])])
+		 translate(dx:450.0 dy:337.5 1:[spawn(tmin:30 tmax:80 1:[translate(dx:362.5 dy:387.5 1:[primitive(kind:pokemon)])])])
+		 translate(dx:100.0 dy:487.5 1:[spawn(tmin:0 tmax:40 1:[translate(dx:93.75 dy:412.5 1:[primitive(kind:pokemon)])])])
 		])
       
    fun{MyFunction Map}
